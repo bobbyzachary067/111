@@ -1,0 +1,53 @@
+pip install flask
+from flask import Flask, render_template, request
+
+app = Flask(__name__)
+
+# In-memory data store for simplicity. In a real application, you would use a database.
+wines = [
+    {"name": "Merlot", "description": "Smooth red wine with flavors of plum and cherry."},
+    {"name": "Chardonnay", "description": "Dry white wine with notes of green apple and citrus."},
+    # Add more wines as needed
+]
+
+@app.route("/")
+def index():
+    return render_template("index.html", wines=wines)
+
+@app.route("/wine/<int:wine_id>")
+def wine_detail(wine_id):
+    wine = wines[wine_id - 1]  # Adjust index since wine_id starts from 1
+    return render_template("wine_detail.html", wine=wine)
+
+if __name__ == "__main__":
+    app.run(debug=True)
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wine Descriptions</title>
+</head>
+<body>
+    <h1>Wine Descriptions</h1>
+    <ul>
+        {% for wine in wines %}
+            <li><a href="/wine/{{ loop.index }}">{{ wine.name }}</a></li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ wine.name }} - Wine Detail</title>
+</head>
+<body>
+    <h1>{{ wine.name }}</h1>
+    <p>{{ wine.description }}</p>
+    <a href="/">Back to Wine List</a>
+</body>
+</html>
+python app.py
