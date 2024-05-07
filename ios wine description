@@ -1,0 +1,84 @@
+// Wine.swift
+class Wine {
+    let name: String
+    let description: String
+    let grape: Grape
+
+    init(name: String, description: String, grape: Grape) {
+        self.name = name
+        self.description = description
+        self.grape = grape
+    }
+}
+
+// Grape.swift
+enum Grape {
+    case merlot
+    case chardonnay
+    // Add more grape types as needed
+}
+// WineListViewController.swift
+import UIKit
+
+class WineListViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
+    @IBOutlet weak var tableView: UITableView!
+
+    let wines = [
+        Wine(name: "Merlot", description: "Smooth red wine with flavors of plum and cherry.", grape: .merlot),
+        Wine(name: "Chardonnay", description: "Dry white wine with notes of green apple and citrus.", grape: .chardonnay)
+    ]
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return wines.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "WineCell", for: indexPath)
+        let wine = wines[indexPath.row]
+        cell.textLabel?.text = wine.name
+        return cell
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let wine = wines[indexPath.row]
+        performSegue(withIdentifier: "ShowWineDetail", sender: wine)
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "ShowWineDetail", let wine = sender as? Wine {
+            if let detailVC = segue.destination as? WineDetailViewController {
+                detailVC.wine = wine
+            }
+        }
+    }
+}
+
+// WineDetailViewController.swift
+import UIKit
+
+class WineDetailViewController: UIViewController {
+    @IBOutlet weak var nameLabel: UILabel!
+    @IBOutlet weak var descriptionLabel: UILabel!
+    @IBOutlet weak var grapeLabel: UILabel!
+    
+    var wine: Wine?
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        if let wine = wine {
+            nameLabel.text = wine.name
+            descriptionLabel.text = wine.description
+            grapeLabel.text = "Grape: \(grapeToString(wine.grape))"
+        }
+    }
+    
+    private func grapeToString(_ grape: Grape) -> String {
+        switch grape {
+        case .merlot:
+            return "Merlot"
+        case .chardonnay:
+            return "Chardonnay"
+        }
+    }
+}
